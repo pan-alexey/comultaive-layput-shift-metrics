@@ -24,6 +24,9 @@ npm run start
 
 
 ## Анализ
+
+![Пример отчета](https://raw.githubusercontent.com/pan-alexey/comultaive-layput-shift-metrics/images/screenshots.png)
+
 Для детального анализа в отчете можно скачать сайм профайл `trace.json` и отчет по CLS
 
 В отчете CLS.json попадают не все данные, а только те, которые имеют DOM узел (т.к. в процессе сбора, DOM узел может быть уделен).
