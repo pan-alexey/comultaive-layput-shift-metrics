@@ -1,9 +1,0 @@
-*.iml
-.idea
-.tscache
-.DS_Store
-node_modules/
-tmp/
-build/
-report/data/
-package-lock.json
