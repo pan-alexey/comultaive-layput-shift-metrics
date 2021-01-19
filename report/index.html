@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Debug panel</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+  <script src="./data/report.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <style>
+    .screenshot-wrapper {
+      width: 500px;
+    }
+
+    .table-container {
+      overflow: auto;
+      overflow-y: hidden;
+      max-width: 100%;
+    }
+
+    .report-table {
+      width: 100%;
+    }
+
+    .screenshot-mobile {
+      width: 130px;
+    }
+
+    .screenshot-desktop {
+      width: 230px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="root">
+  <div class="container">
+    <div class="notification is-primary">
+      Report by analze Comulative layout shift;
+    </div>
+    <table class="table is-bordered report-table">
+      <thead>
+        <tr>
+          <th>URL</th>
+          <th>Platform</th>
+          <th>Date</th>
+          <th>CLS</th>
+          <th>Screenshots</th>
+          <th>Links</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="item in items">
+          <td><a :href="item.url">{{ item.url }}</a></td>
+          <td>{{ item.platform }}</td>
+          <!-- <td>{{new Date(item.date).toISOString() }}</td> -->
+
+          <td>{{ Date(item.date) }}</td>
+          <td>{{ item.cls.toFixed(4) }}</td>
+          <td>
+            <div class="screenshot-wrapper">
+                <div class="table-container">
+                  <table class="table is-bordered is-striped ">
+                    <tbody>
+                        <tr>
+                          <td v-for="sreenshot in item.screenTime">
+                            <div :class="`screenshot-${item.platform}`">
+                              <a :href="`./data/${item.dirName}/${sreenshot.img}`" target="_blank"><img :src="`./data/${item.dirName}/${sreenshot.img}`"></a>
+                              <small class="has-text-centered	">{{sreenshot.progressTime}} ms</small>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                  <!-- Your table content -->
+                </table>
+              </div>
+            </div>
+          </td>
+          <th>
+            <a :href="`./data/${item.dirName}/trace.json`" download>trace.json</a>
+            <a :href="`./data/${item.dirName}/cls.json`" download>cls.json</a>
+          </th>
+        </tr>
+        <tr>
+
+        </tr>
+      </tbody>
+    </table>
+
+    </div>
+  </div>
+  <script>
+    (function (document, global) {
+      document.addEventListener('DOMContentLoaded', load);
+      function load() {
+        let app = new Vue({
+          el: "#root",
+          data: {
+            items: window.report
+          },
+          mounted() {
+          },
+          computed: {},
+          methods: {
+            makeLink(dirname) {
+              console.log(dirname);
+
+              return `./${dirname}/trace.json`
+            },
+          }
+        });
+      };
+    })(document, window);
+  </script>
+</body>
+
+</html>

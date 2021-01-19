@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "typeRoots": [ "node_modules/@types" ],
+    "types": [
+      "jest",
+      "node",
+    ],
+    "module": "commonjs",
+    "noImplicitAny": false,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "declaration": false,
+    "target": "es6",
+    "lib": ["es2015", "dom"],
+    "moduleResolution": "node",
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitUseStrict":true,
+    "noUnusedParameters": false,
+    "pretty": true,
+    "noFallthroughCasesInSwitch": true,
+    "allowUnreachableCode": false,
+    "outDir":"./build"
+  },
+  "include": ["**/*"],
+  "exclude": ["node_modules"],
+  "files": [
+    "index.d.ts"
+  ]
+}
