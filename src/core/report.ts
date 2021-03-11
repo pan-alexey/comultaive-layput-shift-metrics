@@ -3,17 +3,16 @@
 import * as path from 'path';
 import * as fs from 'fs';;
 import { uid, writeScreenshot, writeFile } from '../helpers';
+import { IPage } from '../types';
 
-
-export default async (url: string, platform: string, report:any, reportPath:string): Promise<any> => {
+export default async (param: IPage, report:any, reportPath:string): Promise<any> => {
   const dirName = uid();
   const dir = path.resolve(reportPath, dirName);
   fs.mkdirSync(dir);
 
   const trace = JSON.parse(report.trace);
 
-  const promiceCollect = [];
-
+  const promiseCollect = [];
 
   const screenTime = [];
 
@@ -30,7 +29,7 @@ export default async (url: string, platform: string, report:any, reportPath:stri
     const progressTime = Math.floor( (snap.ts - screenshotStart)/1000);
     const img = `${progressTime}.png`;
 
-    promiceCollect.push(writeScreenshot(path.resolve(dir, img), snap.args.snapshot.toString()));
+    promiseCollect.push(writeScreenshot(path.resolve(dir, img), snap.args.snapshot.toString()));
 
     screenTime.push({
       img,
@@ -38,19 +37,19 @@ export default async (url: string, platform: string, report:any, reportPath:stri
     });
   });
 
-  // // collect write trace.js'
-  promiceCollect.push(writeFile(path.resolve(dir, 'trace.json'), report.tracing));
-  promiceCollect.push(writeFile(path.resolve(dir, 'cls.json'), JSON.stringify({
+  // collect write trace.js'
+  promiseCollect.push(writeFile(path.resolve(dir, 'trace.json'), report.trace));
+  promiseCollect.push(writeFile(path.resolve(dir, 'cls.json'), JSON.stringify({
     cls: report.cls.value,
     layoutShift: report.cls.layoutShift,
   })));
 
-  await Promise.all(promiceCollect);
+  await Promise.all(promiseCollect);
 
   const result = {
     date: Date.now(),
-    url,
-    platform,
+    url: param.url,
+    platform: param.platform,
     dirName,
     cls: report.cls.value,
     layoutShift: report.cls.layoutShift,

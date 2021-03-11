@@ -5,7 +5,8 @@ class Browser {
   private browser: puppeteer.Browser | undefined;
   private options: any;
 
-  constructor(args: Array<string>, userDataDir?: string) {
+  constructor(args: Array<string> = [], userDataDir?: string) {
+
     const options: any = {
       headless: true,
       defaultViewport: null,
@@ -14,6 +15,7 @@ class Browser {
         '--hide-scrollbars', // show scroll bar
       ],
       args: [
+        '--enable-thread-instruction-count',
         '--start-maximized',
         '--disable-web-security', //
         '--app=desired_address_without_brackets', //

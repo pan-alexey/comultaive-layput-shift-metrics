@@ -1,4 +1,4 @@
-FROM node:14
+FROM gitlab-registry.ozon.ru/bx-fe/docker-images/nodejs-12-16-1/master:latest
 
 RUN apk add --no-cache \
       chromium \

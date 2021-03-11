@@ -1,8 +1,22 @@
-export default [
-  ['https://www.ozon.ru', 'desktop'],
-  ['https://www.ozon.ru', 'mobile'],
-  ['https://www.wb.ru', 'desktop'],
-  ['https://www.wb.ru', 'mobile'],
-  ['https://pokupki.market.yandex.ru/', 'desktop'],
-  ['https://pokupki.market.yandex.ru/', 'mobile'],
+import { IPage } from './types';
+
+import commonPreScript from './pre-scripts/common';
+
+const pages: Array<IPage> = [
+  {
+    url: 'https://www.ozon.ru',
+    platform: 'desktop',
+    network: '3G',
+    preScritp: commonPreScript,
+  },
+  {
+    url: 'https://www.ozon.ru',
+    platform: 'desktop',
+    cpuThrottling: 6,
+    network: '3G',
+    preScritp: commonPreScript,
+  },
 ];
+
+
+export default pages;

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as puppeteer from 'puppeteer';
 import * as coreConfig from './config';
+import { IPage } from '../types';
 import * as fs from 'fs';
-import preScript from './pre-script';
 import { sleep } from '../helpers';
 
 import { ICollectContext } from '../types';
@@ -12,9 +12,9 @@ import { startTracing, stopTracing } from './collectors/tracing';
 
 import { normalizeCls } from './metrics/cls';
 
-export const analyzer =  async (browser: puppeteer.Browser, url: string, platform: string): Promise<any> => {
+export const analyzer =  async (browser: puppeteer.Browser, param: IPage): Promise<any> => {
   // create page by platform;
-  const config = coreConfig.getPlatform(platform);
+  const config = coreConfig.getPlatform(param.platform);
   const page: puppeteer.Page = (await browser.pages())[0];
 
   const client = await page.target().createCDPSession();
@@ -22,16 +22,23 @@ export const analyzer =  async (browser: puppeteer.Browser, url: string, platfor
   await page.setUserAgent(config.userAgent);
   await page.setCacheEnabled(false);
 
-  await client.send('Emulation.clearDeviceMetricsOverride');
-  await client.send('Network.setCacheDisabled', {
-    cacheDisabled: true,
-  });
+  // basic auth
+  if (param.basicAuth) {
+    await page.authenticate(param.basicAuth);
+  }
+
+  if (param.preScritp) {
+    await param.preScritp(page, client);
+  }
 
   // Set throttling property
-  await client.send('Network.emulateNetworkConditions', coreConfig.NETWORK_PRESETS.Good3G);
+  if(param.network) {
+    await client.send('Network.emulateNetworkConditions', coreConfig.NETWORK_PRESETS[param.network]);
+  }
 
-  // PRE SCRIPT IF NEEDED
-  //await preScript(page, client); // ++++++++++++++++++++++++++++
+  if(param.cpuThrottling) {
+    await client.send('Emulation.setCPUThrottlingRate', { rate: param.cpuThrottling });
+  }
 
   // show LayoutShiftRegions
   await client.send('Overlay.setShowLayoutShiftRegions', {
@@ -39,26 +46,34 @@ export const analyzer =  async (browser: puppeteer.Browser, url: string, platfor
   });
 
   await page.goto('about:blank');
+
+  await client.send('Emulation.clearDeviceMetricsOverride');
   await client.send('Network.clearBrowserCache');
   await client.send('Storage.clearDataForOrigin', {
     origin: '*',
     storageTypes: 'all',
   });
 
+  await client.send('Network.setCacheDisabled', {
+    cacheDisabled: false,
+  });
+
+
   // interceptor
   await page.on('request', async (request: puppeteer.Request ) => {
-    
-    // // drop ulr by patern
+
+    // // Drop req by url patern
     // const url: string = await request.url();
-    // const condition = url.toLowerCase().includes('example.com');
+    // const condition = url.toLowerCase().includes('o3.ru');
     // if ( condition ) {
     //   request.abort();
     //   return;
     // }
 
     // add extra heders
-    const headers = await request.headers();
-
+    const requestHeaders = await request.headers();
+    const headers = param.headers ? Object.assign({}, requestHeaders, param.headers) : requestHeaders;
+    
     // intecept with extra headers
     await request.continue({
       headers,
@@ -70,7 +85,7 @@ export const analyzer =  async (browser: puppeteer.Browser, url: string, platfor
   await startWindowMetrics(page);
 
   await startTracing(page);
-  await page.goto(url);
+  await page.goto(param.url);
   await page.waitForTimeout(5000);
 
   // create context

@@ -1,7 +1,6 @@
 {
-  "name": "comultaive-layput-shift-metrics",
-  "version": "1.0.0",
-  "description": "",
+  "name": "csl",
+  "version": "1.0.1",
   "main": "dist/index.js",
   "scripts": {
     "tsc": "tsc",
@@ -11,15 +10,10 @@
     "test": "LOG_LEVEL=1 jest --coverage --detectOpenHandles --forceExit --runInBand"
   },
   "repository": {
-    "type": "git",
-    "url": "git+https://github.com/pan-alexey/comultaive-layput-shift-metrics.git"
+    "type": "git"
   },
   "author": "Pan Alexey <pan-alexey@live.com>",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/pan-alexey/comultaive-layput-shift-metrics/issues"
-  },
-  "homepage": "https://github.com/pan-alexey/comultaive-layput-shift-metrics#readme",
   "dependencies": {
     "@types/expect-puppeteer": "^4.4.5",
     "@types/express": "^4.17.9",

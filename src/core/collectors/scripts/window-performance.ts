@@ -4,6 +4,8 @@
 // @ts-nocheck
 
 module.exports = () => {
+  const widgetAttributes = window['__widget_attr__'] || 'data-widget';
+
   if (!window['__performance__']) {
     window['__performance__'] = {};
   }
@@ -100,11 +102,11 @@ module.exports = () => {
 
       // get widgets name
       let widgetName = '';
-      if ( element.hasAttribute('data-widget-name') ) {
-        widgetName = element.getAttribute('data-widget-name');
+      if ( element.hasAttribute(widgetAttributes) ) {
+        widgetName = element.getAttribute(widgetAttributes);
       } else {
-        const parrentElement = element.closest('[data-widget-name]');
-        widgetName = parrentElement ? parrentElement.getAttribute('data-widget-name') : '';
+        const parrentElement = element.closest(`[${widgetAttributes}]`);
+        widgetName = parrentElement ? parrentElement.getAttribute(widgetAttributes) : '';
       }
 
       let str = '<'+element.tagName.toLowerCase();

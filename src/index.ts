@@ -6,21 +6,32 @@ import { writeFile } from './helpers';
 import urls from './urls';
 
 import reportResult from './core/report';
+import { IPage } from './types';
 
-const browserService = new Browser(['--enable-thread-instruction-count']);
 const reportPath = path.resolve(process.env.PWD, 'report/data');
 if (!fs.existsSync(reportPath)){
   fs.mkdirSync(reportPath);
 }
 
-const collect = async (url: string, platform = 'mobile') => {
-  console.log(`start collect [${platform}] - ${url}`);
-  const browser = await browserService.create();
-  const report = await analyzer(browser, url, platform);
-  await browserService.close();
-  console.log(`stop collect [${platform}] - ${url}`);
+const collect = async (page: IPage) => {
 
-  const result = await reportResult(url,platform,report,reportPath);
+  // Sanitize platform
+  page.platform = page.platform === 'desktop' ? 'desktop' : 'mobile';
+
+  // Arguments
+  const chromeArg = [];
+  if (page.proxy) {
+    chromeArg.push(`--proxy-server=${page.proxy}`);
+  }
+  const browserService = new Browser(chromeArg);
+  console.log(`start collect [${page.platform}] - ${page.url}`);
+
+  const browser = await browserService.create();
+  const report = await analyzer(browser, page);
+  await browserService.close();
+  console.log(`stop collect [${page.platform}] - ${page.url}`);
+
+  const result = await reportResult(page ,report,reportPath);
 
   return result;
 };
@@ -28,9 +39,9 @@ const collect = async (url: string, platform = 'mobile') => {
 (async () => {
   const resultJson = [];
   for (let i = 0; i < urls.length; i++) {
-    const [url, platform] = urls[i];
+    const page: IPage = urls[i];
     try {
-      const result = await collect(url, platform);
+      const result = await collect(page);
       resultJson.push(result);
     } catch (error) {
       console.log(error);

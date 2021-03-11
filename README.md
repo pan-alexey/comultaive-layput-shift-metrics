@@ -1,4 +1,5 @@
-# comultaive-layput-shift-metrics
+## puppeteer-metrics
+
 
 ## Команда для запуска 
 ```
@@ -16,6 +17,23 @@ npm run start
 ./src/urls.ts
 ```
 
+## Описание интерфейса
+```
+  url: string;
+  headers?: { // Заголовки для запроса
+    [key: string] : string
+  };
+  proxy?: string; // адрес прокси формата http://domain.com:port
+  basicAuth?: { // Http авторизация для proxy или запроса
+    username: string,
+    password: string,
+  };
+  platform?: 'desktop' | 'mobile';
+  network?: 'GPRS' | 'Slow2G' | 'Good2G' | 'Slow3G' | '3G' | '4G' | 'WiFi'; // Тип сети
+  cpuThrottling?: 4 | 6; // Тротлинг CPU (см. вкладка perfomance cpu)
+  preScritp?: IPreScript; // Сценарий, выполняющйся до запуска тестов.
+```
+
 ## Принцип работы:
 1. Скрипт запускает браузер хром с подсветкой layout shift.
 2. Перед открытием страницы инжектится js код из `.src/core/collectors/scripts/window-performance.ts`. Он записывает все значения perfomanseobserver в window
@@ -24,7 +42,6 @@ npm run start
 
 
 ## Анализ
-
 ![Пример отчета](https://raw.githubusercontent.com/pan-alexey/comultaive-layput-shift-metrics/images/screenshots.png)
 
 Для детального анализа в отчете можно скачать сайм профайл `trace.json` и отчет по CLS
@@ -35,7 +52,7 @@ npm run start
 
 * html - html элемента который был сдвинут
 * shift - на сколько был сдвинут (Если все значения нулевые, то виджет сначала отодвинулся, потом вернулся в начальное положение) 
-
+* widget - виджет который был сдвинут ( элемент содержащий дата атрибут с названием) `./src/core/collectors/scripts/window-performance.ts` [7 строка]
 ## Частые ошибки:
 
 ```
